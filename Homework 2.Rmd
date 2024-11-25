@@ -18,7 +18,88 @@ df$Region <- as.factor(df$Region)
 df$Channel <- as.factor(df$Channel)
 summary(df)
 ```
+
+
+```{r}
+# a
+library(readr)
+library(car)
+data <- read_csv("Wholesale customers data.csv")
+#data<-read.csv(file_path, stringsAsFactors = FALSE)
+data<-data.frame(data)
+head(data)
+str(data)
+dim(data)
+
+data$Channel<-as.factor(data$Channel)
+data$Region<-as.factor(data$Region)
+str(data)
+
+summary(data)
+Boxplot(data[,3:8])
+```
+
+
+```{r}
+# b
+summary(data)
+attach(data)
+data$f_Fresh<-as.factor(ifelse(Fresh>1200,"High_fresh","Low_Fresh"))
+data$f_Milk<-as.factor(ifelse(Milk>6327,"Hihh_Milk","Low_Milk"))
+data$f_Grocery<-as.factor(ifelse(Grocery>4756,"High_Grocery","Low_Grocery"))
+data$f_Frozen<-as.factor(ifelse(Frozen>1526,"High_Frozen","Low_Frozen"))
+data$f_Detergents_Paper<-as.factor(ifelse(Detergents_Paper>816.5,"High_Detergantes_Paper","Low_Detergantes_Paper"))
+data$f_Delicassen<-as.factor(ifelse(Delicassen>965.5,"High_Delicassen","Low_Delicassen"))
+head(data)
+str(data)
+```
+
+
+```{r}
+#Point 2
+# c
+library(FactoMineR)
+data_mca<-data[,c(1:2,9:13)]
+mca_result <- MCA(data_mca,quali.sup = 1:2, graph = FALSE)
+summary(mca_result)
+plot.MCA(mca_result, invisible = "ind", cex = 1.2)
+```
+
+
+```{r}
+#Point 3
+# d
+hcpc_res <- HCPC(mca_result, graph = FALSE)
+hcpc_res$call$t$nb.clust
+```
+
+
+```{r}
+# e
+library(FactoMineR)
+res.pca <- PCA(data[,3:8], graph = FALSE)
+
+hcpc_res_pca <- HCPC(res.pca, graph = FALSE)
+
+hcpc_res_pca$call$t$nb.clust
+```
+
+
 ```{r}
 
 ```
 
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
