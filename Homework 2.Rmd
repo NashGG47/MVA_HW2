@@ -1,0 +1,24 @@
+---
+title: "MVA homework 2"
+author: "Alejandro Cueva Cornejo, Nashly Gonzalez Gonzalez"
+date: "2024-11-25"
+output: html_document
+---
+
+```{r}
+df <- read.csv("Wholesale customers data.csv")
+```
+
+```{r}
+head(df)
+str(df)
+```
+```{r}
+df$Region <- as.factor(df$Region)
+df$Channel <- as.factor(df$Channel)
+summary(df)
+```
+```{r}
+
+```
+
