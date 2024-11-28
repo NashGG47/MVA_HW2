@@ -1,0 +1,281 @@
+---
+title: "Homework2_MVA"
+author: "Nashly Gonzalez"
+date: "2024-11-25"
+output: html_document
+---
+
+# Multiple Correspondence Analysis and Clustering
+
+
+
+## 1. First do the exploratory data analysis
+
+The variables that correspond to the database are:
+
+*	CHANNEL: customers Channel - Horeca (Hotel/Restaurant/CafÃ©) or Retail channel (Nominal)
+*	REGION: customers Region Lisnon, Oporto or Other (Nominal)
+*	FRESH: annual spending (m.u.) on fresh products (Continuous);
+*	MILK: annual spending (m.u.) on milk products (Continuous);
+*	GROCERY: annual spending (m.u.)on grocery products (Continuous);
+*	FROZEN: annual spending (m.u.)on frozen products (Continuous)
+* DETERGENTS_PAPER: annual spending (m.u.) on detergents and paper products (Continuous) 
+*	DELICATESSEN: annual spending (m.u.)on and delicatessen products (Continuous)
+
+###  a) Import the data set correctly to R and assign type of each variable correctly. (0.5p)
+
+The data set was imported into the R program and the Channel and Region variables were converted to factors.
+
+```{r}
+df <- read.csv("Wholesale customers data.csv")
+head(df)
+str(df)
+
+df$Region <- as.factor(df$Region)
+df$Channel <- as.factor(df$Channel)
+str(df)
+
+```
+
+According to the statistical summary and the box plot, it can be observed that the variables:
+
+* Channel, has two levels: 1 and 2, where most of the observations belong to channel 1 (298 observations) versus 2 (142 observations).
+
+* The Region variable has three levels: 1, 2, and 3, distributed with 77 observations in region 1, 47 in region 2, and 316 in region 3.
+
+* The Fresh variable has a wide range that varies between 3 and 112,151 with Q1 (first quartile): 3,128, median: 8,504, Q3 (third quartile): 16,934 and mean: 12,000. It follows that the median is less than the mean, which indicates a right-skewed distribution (there are high outliers), since a large number of observations are in the interquartile range (3,128 to 16,934), but there are some extremely high values.
+
+* The variable Milk, has a range of values between 55 and 73,498.
+Quartiles, with Q1: 1533, median: 3627, Q3: 7190 and mean: 5796. From this, it follows that the mean is greater than the median, which again suggests a right-skew, since most values are in a moderate range, but there are customers with a very high milk consumption.
+
+* The variable Grocery, has a range of values between 3 and 92,780, with Q1: 2153, median: 4756, Q3: 10,656 and mean: 7951. From this it follows that, the consumption of groceries has a similar pattern to the other variables, with a bias to the right due to extreme values, since most of the consumption is in the interquartile range (2153 to 10,656).
+
+* The variable Frozen, has consumption values between 25 and 60,869, with
+Q1: 742.2, median: 1526, Q3: 3554.2 and mean: 3071.9. From this it follows that, the mean is relatively close to Q3, but is still influenced by high extreme values, since the consumption of frozen products is considerably lower compared to groceries or milk.
+
+* The variable Detergents_Paper has values between 3 and 40,827, with Q1: 256.8, median: 816.5, Q3: 3,922.0 and mean: 2,881.5. This shows that there is a great variability in consumption, but most of the values are concentrated in the lower part of the range, since Q1 and the median are relatively low, as there are high extreme values that distort the mean.
+
+* The variable Delicatessen has values between 3 and 47,943, with Q1: 408.2, median: 965.5, Q3: 1,820.2 and mean: 1,524.9. This shows a distribution similar to the other variables, that is, there is a bias to the right due to extreme values, since most of the observations are in the lower part of the range, with few customers consuming high quantities of delicatessen products.
+
+```{r}
+library(car)
+
+summary(df)
+Boxplot(df[,3:8])
+```
+
+### b) Convert the numerical variables to factors consist of two categories “low” and “high” by cutting them from their median and save them as new variables to the data set. (0.5p)
+ 
+The numerical variables were categorized considering the median as the cut-off point.
+
+```{r}
+summary(df)
+attach(df)
+df$f_Frech<-as.factor(ifelse(Fresh>median(Fresh),"High_fresh","Low_Fresh"))
+df$f_Milk<-as.factor(ifelse(Milk>median(Milk),"Hihh_Milk","Low_Milk"))
+df$f_Grocery<-as.factor(ifelse(Grocery>median(Grocery),"High_Grocery","Low_Grocery"))
+df$f_Frozen<-as.factor(ifelse(Frozen>median(Frozen),"High_Frozen","Low_Frozen"))
+df$f_Detergents_Paper<-as.factor(ifelse(Detergents_Paper>median(Detergents_Paper),"High_Detergantes_Paper","Low_Detergantes_Paper"))
+df$f_Delicassen<-as.factor(ifelse(Delicassen>median(Delicassen),"High_Delicassen","Low_Delicassen"))
+head(df)
+str(df)
+```
+
+## 2.  Application of Multiple Correspondence Analysis (MCA).
+
+### c) Apply MCA on the categorical variables taking Region and Chanel as supplementary variables by using MCA() function in FactoMineR package. Interpret your findings. (3p)
+
+  The results of the R program seek to explore relationships between categorical variables, transforming them into latent dimensions to reduce dimensionality and facilitate interpretation. For example:
+  
+1. Variance explained by dimensions: Dim.1, Dim.2 and Dim. 3 together explain 76.0% of the total variance. This indicates that these three main dimensions capture most of the structural relationships in the data while the additional dimensions (Dim.4 and later) contribute marginally. The scree plot supports this selection, showing a clear "elbow" after Dim.3 and a sharp decline in explained variance (Dim.4 and beyond contribute less than 12% each). Thus, focusing on the first three dimensions effectively balances interpretability and information retention.
+
+2. Interpretation of individuals
+In the Individuals section, information is provided on the projections and contributions of the observations in the main dimensions. In the analysis, Dim.1 (40.6% variance) describes most individuals (e.g., 1, 2, 3, 10) with high contributions and excellent representation (cos2 > 0.57). Dim.2 (22.4% variance) is important for individuals like 4 and 5, with moderate to high contributions (cos2 > 0.43). Dim.3 (13% variance) adds details for individuals like 2, 7, and 8, with significant contributions (cos2 > 0.33). For instance, individual 1 is projected with a coordinate of -0.771 in dimension 1, -0.252 in dimension 2 and -0.501 in dimension 3. The biplot confirms these patterns, showing clear separations and clusters among individuals, reflecting the multidimensional structure of the data.
+
+3. Interpretation of the categories
+Categories of categorical variables have similar coordinates and metrics to individuals.
+
+* Dim.1: This dimension is strongly defined by the categories Low_Milk, High_Milk, Low_Grocery, High_Grocery, High_Detergantes_Paper, and Low_Detergantes_Paper, all with significant contributions (>14%) and excellent representation (cos2 > 0.7). Extreme v.test values highlight a clear separation between opposing categories, such as High_Grocery and Low_Grocery, indicating that Dim.1 captures key differences in the consumption of milk, grocery items, and cleaning products.
+
+* Dim.2: The main categories are High_Fresh, Low_Fresh, High_Frozen, and Low_Frozen, with high contributions (>16%) and good representation (cos2 between 0.43 and 0.47). Extreme v.test values confirm a strong separation between high and low levels of freshness and frozen products. Dim.2 describes patterns related to these characteristics, clearly differentiating consumers with opposite preferences.
+
+* Dim.3: The most relevant categories are High_Fresh and Low_Fresh (with contributions approximately 32%) and, to a lesser extent, High_Frozen and Low_Frozen (with contributions approximately 13%). These categories are well-represented (cos2 > 0.5), indicating that Dim.3 captures additional differences related to freshness. Extreme v.test values further reinforce that Dim.3 complements Dim.2 by providing specific details about freshness levels.
+
+For instance, some key observations are:
+Categories such as High_Milk and Low_Milk have high ctr values in Dim.1, indicating that they are key to explaining this dimension. The cos2 shows that these categories are well represented in Dim.1, but not so much in Dim.3. The v.test evaluates the statistical significance of the association of the category with the dimension. High values (positive or negative) imply that the category is strongly associated with the dimension. For example:
+High_Grocery has a strong association with Dim.1 (v.test = 18.380), suggesting that this dimension discriminates between high and low levels of grocery shopping.
+
+4. Global Categorical Variables 
+
+Dim.1 is primarily defined by f_Milk (0.715), f_Grocery (0.770), and f_Detergents_Paper (0.693), confirming that this dimension captures key differences in the consumption of milk, grocery items, and cleaning products. Dim.2 is influenced by f_Frech (0.436) and f_Frozen (0.477), reflecting a clear distinction between levels of freshness and frozen products. Dim.3 is dominated by f_Frech (0.503) and, to a lesser extent, by f_Frozen (0.208), indicating that this dimension complements Dim.2 by adding more detailed information about freshness.
+
+5. Supplementary variables
+The supplementary variables do not contribute to the model but are projected into the space for interpretation. Key observations:
+The variable Channel is highly associated with Dim.1 (eta2=0.503), indicating that this dimension is strongly related to the shopping channel.
+The variable Region has weaker associations, indicating that it does not influence the three first dimensions as much.
+
+```{r}
+
+options(width = 200)
+
+library(FactoMineR)
+library(factoextra)
+head(df)
+data_mca<-df[,c(1:2,9:14)]
+mca_result <- MCA(data_mca,quali.sup = 1:2, graph = FALSE)
+summary(mca_result)
+
+### Eigenvalues
+mca_result$eig
+fviz_screeplot(mca_result, addlabels = TRUE, ylim = c(0, 50))
+
+# Combined variables and individuals Dim.1 vs Dim.2 / Dim.1 vs Dim.3 / Dim.2 vs Dim.3
+fviz_mca_biplot(mca_result, axes = c(1, 2), repel = TRUE, title="MCA Individuals: Dim.1 vs Dim.2")
+fviz_mca_biplot(mca_result, axes = c(1, 3), repel = TRUE, title="MCA Individuals: Dim.1 vs Dim.2") 
+fviz_mca_biplot(mca_result, axes = c(2, 3), repel = TRUE, title="MCA Individuals: Dim.1 vs Dim.2")
+
+# Contribution of variables and categories
+# Variables' representation Dim.1 vs Dim.2 / Dim.1 vs Dim.3 / Dim.2 vs Dim.3
+fviz_mca_var(mca_result, axes = c(1, 2), repel = TRUE, title="MCA: Dim.1 vs Dim.2")
+fviz_mca_var(mca_result, axes = c(1, 3), repel = TRUE, title="MCA: Dim.1 vs Dim.3") 
+fviz_mca_var(mca_result, axes = c(2, 3), repel = TRUE, title="MCA: Dim.2 vs Dim.3")
+
+```
+
+ Regarding the perceptual map, it can be observed that:
+
+* Graph: Dim.1 vs Dim.2
+Dim.1 (40.6%) separates general consumption categories like High_Milk and High_Grocery from Low_Milk and Low_Grocery, while Dim.2 (22.4%) distinguishes high and low levels of freshness and frozen products, such as High_Fresh and Low_Frozen. In the lower left quadrant, high consumption categories like High_Grocery and High_Milk are grouped together, while the upper left quadrant includes categories like Low_Frozen and Low_Fresh, reflecting lower levels of freshness and frozen products. In the upper right quadrant, categories such as Low_Milk and Low_Grocery appear, representing low general consumption, and in the lower right quadrant, High_Fresh and High_Frozen highlight consumers who prioritize freshness and frozen products. Supplementary variables (Region and Channel) have a minor impact, appearing near the origin. This graph combines global consumption differences with specific preferences.
+
+* Graph: Dim.2 vs Dim.3
+Dim.2 (22.4%) distinguishes between high and low levels of freshness and frozen products, while Dim.3 (13%) adds details related to freshness and specific products like delicatessen. The lower left quadrant groups categories like High_Fresh, reflecting consumers who prioritize fresh products, while the upper left quadrant includes Low_Fresh and Low_Frozen, associated with consumers who buy fewer fresh and frozen items. In the upper right quadrant, categories such as Low_Delicatessen appear, highlighting low specific consumption, while the lower right quadrant brings together High_Frozen and High_Delicatessen, indicating consumers with high preferences for frozen and delicatessen products. This graph highlights specific details and clear preferences for freshness and specific products.
+
+* Graph: Dim.1 vs Dim.3
+Dim.1 (40.6%) captures general consumption differences, while Dim.3 (13%) adds details about freshness and specific preferences. The lower left quadrant groups categories like High_Grocery and High_Milk, representing high general consumption, while the upper left quadrant includes High_Delicatessen, emphasizing specific preferences for delicatessen. In the upper right quadrant, categories such as Low_Grocery and Low_Milk appear, reflecting low consumption levels, and the lower right quadrant includes High_Fresh and Low_Frozen, showing consumers who prioritize freshness but have less interest in frozen products. This graph combines general consumption differences with nuances in freshness and specific preferences.
+
+## 3. Hierarchical Clustering based on MCA and PCA scores.
+
+### d) Apply hierarchical clustering on MCA scores obtained from previous step by using HCPC function.How many clusters are constructed? (1.5p)
+
+After applying clustering to the MCA dimension scores, 4 clusters are obtained.
+
+```{r}
+hcpc_res <- HCPC(mca_result, graph = FALSE)
+hcpc_res$call$t$nb.clust
+
+# Visualize dendrogram
+plot(hcpc_res, title="Dendrogram for MCA Clustering - Dim 1 vs Dim 2")
+plot(hcpc_res, axes = c(1, 3), title="Dendrogram for MCA Clustering - Dim 1 vs Dim 3")
+plot(hcpc_res, axes = c(2, 3), title="Dendrogram for MCA Clustering - Dim 2 vs Dim 3")
+
+# Visualize clusters on MCA space
+library(factoextra)
+fviz_cluster(hcpc_res, repel = FALSE, main = "Clusters in MCA Space - Dim 1 vs Dim 2")
+fviz_cluster(hcpc_res, repel = FALSE, axes = c(1, 3), main = "Clusters in MCA Space - Dim 1 vs Dim 3")
+fviz_cluster(hcpc_res, repel = FALSE, axes = c(2, 3), main = "Clusters in MCA Space - Dim 2 vs Dim 3")
+
+# Summarize cluster assignments
+table(hcpc_res$data.clust$clust)
+```
+
+### e) Apply hierarchical clustering on PCA scores considering only the numerical variables and taking Region and Channel variables as supplementary variables. How many clusters are constructed? (1.5p)
+
+After applying clustering to the numerical variables, 3 clusters are obtained.
+
+```{r}
+library(FactoMineR)
+res.pca <- PCA(df[,3:8],quali.sup = 1:2, graph = FALSE)
+?PCA
+hcpc_res_pca <- HCPC(res.pca, graph = FALSE)
+
+hcpc_res_pca$call$t$nb.clust
+
+# Visualize dendrogram
+plot(hcpc_res_pca, title="Dendrogram for PCA Clustering - Dim 1 vs Dim 2")
+plot(hcpc_res_pca, axes = c(1, 3), title="Dendrogram for PCA Clustering - Dim 1 vs Dim 3")
+plot(hcpc_res_pca, axes = c(2, 3), title="Dendrogram for PCA Clustering - Dim 2 vs Dim 3")
+
+# Visualize clusters in PCA space
+fviz_cluster(hcpc_res_pca, repel = FALSE, main = "Clusters in PCA Space - Dim 1 vs Dim 2")
+fviz_cluster(hcpc_res_pca, repel = FALSE, axes = c(1, 3), main = "Clusters in PCA Space - Dim 1 vs Dim 3")
+fviz_cluster(hcpc_res_pca, repel = FALSE, axes = c(2, 3), main = "Clusters in PCA Space - Dim 2 vs Dim 3")
+
+# Summarize cluster assignments
+table(hcpc_res_pca$data.clust$clust)
+```
+
+## 4. Profiling
+
+### f) Interpret the clusters obtained from both methods. (2p)
+
+MCA Method:
+
+To characterize the clusters, the indicators Cla/Mod and Mod/Cla are used, where Cla/Mod indicates the percentage of individuals in the category that belongs to the cluster, that is, the higher this percentage, the more representative the category is for the cluster, while Mod/Cla indicates the percentage of individuals in the cluster that belong to that category, that is, it shows how common a category is within the cluster. 
+
+According to this, in cluster 1, the proportions of the categories Low_Frozen (57.73%) are highlighted, that is, more than half of the people with a low consumption of frozen products; High_Grocery (55.00%), that is, this cluster concentrates a high percentage of consumers with a high expenditure on groceries; High_Detergents_Paper (52.73%), that is, more than 50% of the individuals with a high consumption of detergents/paper belong to the cluster; Channel_2 (63.38%), that is, the majority of the individuals in channel 2 belong to this cluster. Similarly, using Mod/Cla, we have, Low_Frozen (100.00%), that is, all individuals in this cluster have low consumption of frozen products; High_Grocery (95.28%), that is, almost all have a high expenditure on groceries; High_Detergents_Paper (91.34%), that is, the majority have high consumption of detergents/paper; Channel_2 (70.87%), that is, a significant percentage of this cluster belongs to channel 2. 
+
+In cluster 2, there are Cla/Mod values, High_Frozen (41.82%), that is, this cluster brings together more than 40% of individuals with high consumption of frozen products; High_Milk (40.00%), that is, there is a high representation of people with a high consumption of milk; High_Grocery (38.64%), that is, a significant percentage with high expenditure on groceries; High_Detergantes_Paper (35.45%), i.e. there is a relevant representation of high detergent/paper consumers. Similarly in Mod/Cla, there is High_Frozen (100.00%), i.e. all individuals in this cluster have a high consumption of frozen products; High_Milk (95.65%), i.e. almost all have a high consumption of milk; High_Grocery (92.39%), i.e. the vast majority have a high expenditure on groceries; High_Detergantes_Paper (84.78%), i.e. there is a significant percentage that has a high consumption of detergents/paper. 
+
+For Cluster 3 in Cla/Mod, there are: Low_Grocery (58.64%), that is, this cluster concentrates a large percentage of consumers with low spending on groceries, Low_Milk (54.55%), that is, there is a significant representation of consumers with low milk consumption, Low_Detergents_Paper (52.27%), that is, there is a high representation of low detergent/paper consumption. For Mod/Cla, we have, Channel_1 (98.54%), that is, the vast majority of individuals belong to channel 1, Low_Grocery (94.16%), that is, almost all consumers have low spending on groceries, Low_Milk (87.59%), that is, there is a high percentage of individuals with low milk consumption, Low_Detergents_Paper (83.94%), that is, consumers with low use of detergents/paper predominate. 
+
+Finally, for cluster 4 Cla/Mod, we have High_Frozen (38.18%), that is, this cluster concentrates a significant proportion of consumers with high consumption of frozen products, High_Fresh (38.18%), that is, there is a high representation of consumers with high consumption of fresh products, Low_Detergantes_Paper (36.36%), that is, there is a large percentage of consumers with low consumption of detergents/paper. For Mod/Cla, we have High_Frozen (100.00%), that is, all consumers have high consumption of frozen products, High_Fresh (100.00%), that is, all consumers have high consumption of fresh products, Low_Detergantes_Paper (95.24%), that is, the majority have low consumption of detergents/paper.
+
+In summary, the main characteristics are that Cluster 1 has consumers with low consumption of frozen products but high consumption of groceries, detergents and channel 2, Cluster 2 has consumers with high spending on frozen products, milk, groceries and detergents, Cluster 3 has consumers with low spending on groceries, milk and detergents, mostly in channel 1, and Cluster 4: Consumers with high consumption of fresh and frozen products, but low consumption of detergents/paper.
+
+```{r}
+# clusters MCA
+hcpc_res$desc.var
+```
+
+PCA Method:
+
+The profile report for clusters after PCA shows the columns: v.test, which measures the difference between the mean of the variable in the cluster and the global mean, in relation to its standard deviation, so that a high and positive value indicates that the variable is significantly higher in the cluster while negative values show that the variable is significantly lower in the cluster; an associated p-value (column p.value) indicates whether the difference is statistically significant; mean in category, represents the mean of the variable for the observations within a specific cluster; overall mean, is the global mean of the variable for all data (without distinguishing between clusters), which serves as a reference to evaluate whether the mean in the cluster is high or low; sd in category, measures the variability of the variable within the cluster. A low value indicates that the data are more concentrated around the cluster mean; and verall sd (global standard deviation), measures the variability of the variable in the entire population (without distinguishing clusters). Based on the above information, the clusters are distinguished as:
+
+* Cluster 1: The variables Milk, Detergents_Paper and Grocery have values significantly lower than the global mean. For example, the v.test for Milk is -13.82, with a cluster mean of 4115.1 versus a global mean of 5796.27. This indicates that observations in this cluster tend to spend less on milk. Delicassen is also lower in this cluster, but not as marked as the other variables. So, this cluster could represent customers with low spending in general, especially on essential products such as milk and cleaning products.
+
+* Cluster 2: The variables Detergents_Paper, Grocery, and Milk have significantly higher values than the global mean, for example, spending on
+Detergents_Paper is 13,518.25, which is much higher than the global mean of 2881.49 (v.test = 15.6, p < 0.001).
+On the other hand, Fresh has a lower value than the global mean (although the difference is not that big). So, this cluster could represent customers who focus on cleaning products and basic groceries, but do not buy large quantities of fresh products.
+
+* Cluster 3: The variables Frozen, Delicassen, and Fresh have significantly higher values than the global mean. For example, spending on Frozen is 38,049.33, while the global mean is only 3071.93 (v.test = 12.52, p < 0.001). Milk is also higher in this cluster, although the difference is less pronounced. So, this cluster could represent customers with high spending on frozen, delicatessen and fresh products, possibly restaurants or businesses that buy in large quantities.
+
+
+According to the above metrics, it can be seen that cluster 1 presents customers with low spending in general, especially on milk, cleaning products and basic groceries; cluster 2 presents customers with high spending on basic products (groceries and cleaning), but less emphasis on fresh products; and cluster 3 presents customers with high spending on frozen, delicatessen and fresh products, possibly large consumers or businesses.
+
+
+```{r}
+# clusters PCA
+hcpc_res_pca$desc.var$quanti
+```
+
+
+### g) Which of the above hierarchical clustering methods would you choose? Why? ( (1p)
+
+ Clustering with MCA scores was the most relevant procedure to segment the groups, since the analysis of the results of the clusters with the MCA scores shows patterns of relationships between categories of variables that were not so evident with the original variables. For example, consumption patterns are easier to detect with clustering after MCA, since the clusters with MCA show more differentiated and explanatory patterns of the groups, such as preferences for certain types of products (for example, fresh or frozen products) and broader categories of products (milk, detergents, delicatessen).
+There is also a better consistency in statistical significance since the chi-square tests between the clusters and the categorical variables (such as freshness, milk, etc.) in the clustering with MCA were highly significant, indicating that the differences between the clusters are robust in terms of the selected categories.
+ 
+ When comparing the origin of the clusters, MCA was preferred over clustering. This was because MCA provided more detailed and directly interpretable profiles, since it captured the relationships between categories of the variables. For example, combinations such as "high spending on groceries and low spending on frozen foods" were easily identifiable in the clusters. MCA also allows variables to be used in the description of the clusters.
+
+```{r}
+# Evaluate cluster quality using silhouette scores
+library(cluster)
+library(factoextra)
+library(FactoMineR)
+
+# Silhouette for MCA
+sil_mca <- silhouette(as.numeric(hcpc_res$data.clust$clust), dist(mca_result$ind$coord))
+fviz_silhouette(sil_mca, main = "Silhouette Plot for MCA Clustering")
+summary(sil_mca)
+
+# Silhouette for PCA
+sil_pca <- silhouette(as.numeric(hcpc_res_pca$data.clust$clust), dist(res.pca$ind$coord))
+fviz_silhouette(sil_pca, main = "Silhouette Plot for PCA Clustering")
+summary(sil_pca)
+
+mean_silhouette_mca <- mean(sil_mca[, 3])
+mean_silhouette_pca <- mean(sil_pca[, 3])
+
+cat("mean of Silueta - MCA:", mean_silhouette_mca, "\n")
+cat("mean of Silueta - PCA:", mean_silhouette_pca, "\n")
+```
+
