@@ -102,8 +102,7 @@ Categories of categorical variables have similar coordinates and metrics to indi
 * Dim.3: The most relevant categories are High_Fresh and Low_Fresh (with contributions approximately 32%) and, to a lesser extent, High_Frozen and Low_Frozen (with contributions approximately 13%). These categories are well-represented (cos2 > 0.5), indicating that Dim.3 captures additional differences related to freshness. Extreme v.test values further reinforce that Dim.3 complements Dim.2 by providing specific details about freshness levels.
 
 For instance, some key observations are:
-Categories such as High_Milk and Low_Milk have high ctr values in Dim.1, indicating that they are key to explaining this dimension. The cos2 shows that these categories are well represented in Dim.1, but not so much in Dim.3. The v.test evaluates the statistical significance of the association of the category with the dimension. High values (positive or negative) imply that the category is strongly associated with the dimension. For example:
-High_Grocery has a strong association with Dim.1 (v.test = 18.380), suggesting that this dimension discriminates between high and low levels of grocery shopping.
+Categories such as High_Milk and Low_Milk have high ctr values in Dim.1, indicating that they are key to explaining this dimension. The cos2 shows that these categories are well represented in Dim.1, but not so much in Dim.3. The v.test evaluates the statistical significance of the association of the category with the dimension. High values (positive or negative) imply that the category is strongly associated with the dimension. For example: High_Grocery has a strong association with Dim.1 (v.test = 18.380), suggesting that this dimension discriminates between high and low levels of grocery shopping.
 
 4. Global Categorical Variables 
 
@@ -145,13 +144,14 @@ fviz_mca_var(mca_result, axes = c(2, 3), repel = TRUE, title="MCA: Dim.2 vs Dim.
  Regarding the perceptual map, it can be observed that:
 
 * Graph: Dim.1 vs Dim.2
-Dim.1 (40.6%) separates general consumption categories like High_Milk and High_Grocery from Low_Milk and Low_Grocery, while Dim.2 (22.4%) distinguishes high and low levels of freshness and frozen products, such as High_Fresh and Low_Frozen. In the lower left quadrant, high consumption categories like High_Grocery and High_Milk are grouped together, while the upper left quadrant includes categories like Low_Frozen and Low_Fresh, reflecting lower levels of freshness and frozen products. In the upper right quadrant, categories such as Low_Milk and Low_Grocery appear, representing low general consumption, and in the lower right quadrant, High_Fresh and High_Frozen highlight consumers who prioritize freshness and frozen products. Supplementary variables (Region and Channel) have a minor impact, appearing near the origin. This graph combines global consumption differences with specific preferences.
-
-* Graph: Dim.2 vs Dim.3
-Dim.2 (22.4%) distinguishes between high and low levels of freshness and frozen products, while Dim.3 (13%) adds details related to freshness and specific products like delicatessen. The lower left quadrant groups categories like High_Fresh, reflecting consumers who prioritize fresh products, while the upper left quadrant includes Low_Fresh and Low_Frozen, associated with consumers who buy fewer fresh and frozen items. In the upper right quadrant, categories such as Low_Delicatessen appear, highlighting low specific consumption, while the lower right quadrant brings together High_Frozen and High_Delicatessen, indicating consumers with high preferences for frozen and delicatessen products. This graph highlights specific details and clear preferences for freshness and specific products.
+Dim.1 (40.6%) separates general consumption categories like High_Milk and High_Grocery from Low_Milk and Low_Grocery, while Dim.2 (22.4%) distinguishes high and low levels of freshness and frozen products, such as High_Fresh and Low_Frozen. In the lower left quadrant, high consumption categories like High_Grocery and High_Milk are grouped together, while the upper left quadrant includes categories like Low_Frozen and Low_Fresh, reflecting lower levels of freshness and frozen products. In the upper right quadrant, categories such as Low_Milk and Low_Grocery appear, representing low general consumption, and in the lower right quadrant, High_Fresh and High_Frozen highlight consumers who prioritize freshness and frozen products. Channel 2 is linked to higher consumption categories (e.g., High_Grocery and High_Milk), while Channel 1 aligns with lower consumption categories (e.g., Low_Grocery and Low_Milk), reflecting distinct consumer behaviors. Supplementary variable (Region) has a minor impact, appearing near the origin. This graph combines global consumption differences with specific preferences.
 
 * Graph: Dim.1 vs Dim.3
-Dim.1 (40.6%) captures general consumption differences, while Dim.3 (13%) adds details about freshness and specific preferences. The lower left quadrant groups categories like High_Grocery and High_Milk, representing high general consumption, while the upper left quadrant includes High_Delicatessen, emphasizing specific preferences for delicatessen. In the upper right quadrant, categories such as Low_Grocery and Low_Milk appear, reflecting low consumption levels, and the lower right quadrant includes High_Fresh and Low_Frozen, showing consumers who prioritize freshness but have less interest in frozen products. This graph combines general consumption differences with nuances in freshness and specific preferences.
+Dim.1 (40.6%) captures general consumption differences, while Dim.3 (13%) adds details about freshness and specific preferences. The lower left quadrant groups categories like High_Grocery and High_Milk, representing high general consumption, while the upper left quadrant includes High_Delicatessen, emphasizing specific preferences for delicatessen. In the upper right quadrant, categories such as Low_Grocery and Low_Milk appear, reflecting low consumption levels, and the lower right quadrant includes High_Fresh and Low_Frozen, showing consumers who prioritize freshness but have less interest in frozen products. Channel 2 aligns with high consumption categories like High_Grocery and High_Milk, while Channel 1 associates with low consumption categories like Low_Grocery and Low_Milk. Region has minimal influence, appearing near the origin. This graph combines general consumption differences with nuances in freshness and specific preferences.
+
+* Graph: Dim.2 vs Dim.3
+Dim.2 (22.4%) distinguishes between high and low levels of freshness and frozen products, while Dim.3 (13%) adds details related to freshness and specific products like delicatessen. The lower left quadrant groups categories like High_Fresh, reflecting consumers who prioritize fresh products, while the upper left quadrant includes Low_Fresh and Low_Frozen, associated with consumers who buy fewer fresh and frozen items. In the upper right quadrant, categories such as Low_Delicatessen appear, highlighting low specific consumption, while the lower right quadrant brings together High_Frozen and High_Delicatessen, indicating consumers with high preferences for frozen and delicatessen products. Channel, Region, and product categories like Low_Milk, High_Milk, Low_Grocery, High_Grocery, Low_Detergents_Paper, and High_Detergents_Paper are near the graph's center, indicating minimal influence on Dim.2 and Dim.3. This graph highlights specific details and clear preferences for freshness and specific products.
+
 
 ## 3. Hierarchical Clustering based on MCA and PCA scores.
 
@@ -167,6 +167,9 @@ hcpc_res$call$t$nb.clust
 plot(hcpc_res, title="Dendrogram for MCA Clustering - Dim 1 vs Dim 2")
 plot(hcpc_res, axes = c(1, 3), title="Dendrogram for MCA Clustering - Dim 1 vs Dim 3")
 plot(hcpc_res, axes = c(2, 3), title="Dendrogram for MCA Clustering - Dim 2 vs Dim 3")
+
+# Plotting the clustering result on the MCA 2D map
+plot(hcpc_res, choice = "map", title = "Dendrogram for MCA Clustering - Dim 1 vs Dim 2")
 
 # Visualize clusters on MCA space
 library(factoextra)
@@ -229,18 +232,15 @@ hcpc_res$desc.var
 
 PCA Method:
 
-The profile report for clusters after PCA shows the columns: v.test, which measures the difference between the mean of the variable in the cluster and the global mean, in relation to its standard deviation, so that a high and positive value indicates that the variable is significantly higher in the cluster while negative values show that the variable is significantly lower in the cluster; an associated p-value (column p.value) indicates whether the difference is statistically significant; mean in category, represents the mean of the variable for the observations within a specific cluster; overall mean, is the global mean of the variable for all data (without distinguishing between clusters), which serves as a reference to evaluate whether the mean in the cluster is high or low; sd in category, measures the variability of the variable within the cluster. A low value indicates that the data are more concentrated around the cluster mean; and verall sd (global standard deviation), measures the variability of the variable in the entire population (without distinguishing clusters). Based on the above information, the clusters are distinguished as:
+The PCA cluster profile report identifies clusters using metrics like v.test for differences from the global mean, p.value for significance, and mean in category versus overall mean for comparisons. Variability is captured by sd in category and overall sd, highlighting each cluster’s unique characteristics. Based on the above information, the clusters are distinguished as:
 
-* Cluster 1: The variables Milk, Detergents_Paper and Grocery have values significantly lower than the global mean. For example, the v.test for Milk is -13.82, with a cluster mean of 4115.1 versus a global mean of 5796.27. This indicates that observations in this cluster tend to spend less on milk. Delicassen is also lower in this cluster, but not as marked as the other variables. So, this cluster could represent customers with low spending in general, especially on essential products such as milk and cleaning products.
+* Cluster 1: The variables such as Grocery, Detergents_Paper, and Milk show means far below the global averages. For example, spending on Grocery is 5122.42, compared to a global mean of 7951.28 (v.test = -15.71, p < 0.001). Similarly, Detergents_Paper and Milk exhibit considerable negative deviations from their respective global averages. Spending on Delicassen is also below the global average, but less prominently. However, spending on Fresh products is slightly above the global mean (v.test = 2.41, p = 0.015), suggesting a mild preference for fresh goods over other categories. This cluster likely represents budget-conscious customers who exhibit limited spending on essential products and prioritize fresh goods moderately.
 
-* Cluster 2: The variables Detergents_Paper, Grocery, and Milk have significantly higher values than the global mean, for example, spending on
-Detergents_Paper is 13,518.25, which is much higher than the global mean of 2881.49 (v.test = 15.6, p < 0.001).
-On the other hand, Fresh has a lower value than the global mean (although the difference is not that big). So, this cluster could represent customers who focus on cleaning products and basic groceries, but do not buy large quantities of fresh products.
+* Cluster 2: This cluster is characterized by extremely high spending on specialty product categories such as Frozen, Delicassen, and Fresh. For instance, spending on Frozen products is 48,701.50, compared to a global mean of 3071.93 (v.test = 13.32, p < 0.001), and spending on Delicassen is 26,776, far exceeding the global mean of 1524.87 (v.test = 12.69, p < 0.001). Milk spending is also significantly elevated in this cluster, although it is not as pronounced as other categories. Fresh spending is similarly higher than the global mean (v.test = 2.55, p = 0.01), reinforcing the pattern of customers who prioritize specialty goods. This cluster likely represents high-spending consumers, such as businesses or restaurants, that make bulk purchases of Frozen, Delicassen, and Fresh items.
 
-* Cluster 3: The variables Frozen, Delicassen, and Fresh have significantly higher values than the global mean. For example, spending on Frozen is 38,049.33, while the global mean is only 3071.93 (v.test = 12.52, p < 0.001). Milk is also higher in this cluster, although the difference is less pronounced. So, this cluster could represent customers with high spending on frozen, delicatessen and fresh products, possibly restaurants or businesses that buy in large quantities.
+* Cluster 3: This cluster highlights customers with moderate spending focused on essentials. Variables such as Grocery and Detergents_Paper show significantly higher spending compared to the global mean, with Grocery spending at 26,176.69 versus the global mean of 7951.28 (v.test = 15.68, p < 0.001) and Detergents_Paper at 11,964.67 compared to the global mean of 2881.49 (v.test = 15.57, p < 0.001). Milk spending is also elevated, with a cluster mean of 16,051.57 versus a global mean of 5796.27 (v.test = 11.36, p < 0.001). Spending on Delicassen is slightly above average, whereas Frozen and Fresh show spending levels below the global mean. This cluster likely represents practical consumers who prioritize essential items while spending less on specialty or fresh products.
 
-
-According to the above metrics, it can be seen that cluster 1 presents customers with low spending in general, especially on milk, cleaning products and basic groceries; cluster 2 presents customers with high spending on basic products (groceries and cleaning), but less emphasis on fresh products; and cluster 3 presents customers with high spending on frozen, delicatessen and fresh products, possibly large consumers or businesses.
+According to the above metrics, the three clusters reveal distinct spending profiles. Cluster 1 consists of cost-conscious customers who limit spending across most categories but show some interest in fresh goods. Cluster 2 represents high-value buyers, likely businesses or bulk purchasers, who focus heavily on specialty products like Frozen and Delicassen. Cluster 3 encompasses practical customers who emphasize spending on essentials like groceries and cleaning products, with limited focus on specialty or fresh goods. Together, these clusters provide a comprehensive view of how customers prioritize their purchases, enabling targeted strategies for each group.
 
 
 ```{r}
@@ -248,19 +248,19 @@ According to the above metrics, it can be seen that cluster 1 presents customers
 hcpc_res_pca$desc.var$quanti
 ```
 
+### g) Which of the above hierarchical clustering methods would you choose? Why? (1p)
 
-### g) Which of the above hierarchical clustering methods would you choose? Why? ( (1p)
 
- Clustering with MCA scores was the most relevant procedure to segment the groups, since the analysis of the results of the clusters with the MCA scores shows patterns of relationships between categories of variables that were not so evident with the original variables. For example, consumption patterns are easier to detect with clustering after MCA, since the clusters with MCA show more differentiated and explanatory patterns of the groups, such as preferences for certain types of products (for example, fresh or frozen products) and broader categories of products (milk, detergents, delicatessen).
-There is also a better consistency in statistical significance since the chi-square tests between the clusters and the categorical variables (such as freshness, milk, etc.) in the clustering with MCA were highly significant, indicating that the differences between the clusters are robust in terms of the selected categories.
- 
- When comparing the origin of the clusters, MCA was preferred over clustering. This was because MCA provided more detailed and directly interpretable profiles, since it captured the relationships between categories of the variables. For example, combinations such as "high spending on groceries and low spending on frozen foods" were easily identifiable in the clusters. MCA also allows variables to be used in the description of the clusters.
 
 ```{r}
 # Evaluate cluster quality using silhouette scores
 library(cluster)
 library(factoextra)
 library(FactoMineR)
+
+
+
+#########  Silhoutte Index #########
 
 # Silhouette for MCA
 sil_mca <- silhouette(as.numeric(hcpc_res$data.clust$clust), dist(mca_result$ind$coord))
@@ -277,5 +277,69 @@ mean_silhouette_pca <- mean(sil_pca[, 3])
 
 cat("mean of Silueta - MCA:", mean_silhouette_mca, "\n")
 cat("mean of Silueta - PCA:", mean_silhouette_pca, "\n")
+
+
+
+######## TWSS Elbow Graph #########
+
+# Use the factorial coordinates from MCA
+data_mca <- mca_result$ind$coord  # Factorial coordinates from MCA
+# Create a vector to store TWSS
+aux <- c()
+for (i in 2:6) {  # Adjust the range if needed
+  k <- kmeans(data_mca, centers = i, nstart = 25)
+  aux[i - 1] <- k$tot.withinss  # TWSS for each number of clusters
+}
+# Plot the Elbow Method graph
+plot(2:6, aux, xlab = "Number of Clusters", ylab = "TWSS", type = "l", main = "TWSS vs. Number of Clusters for MCA")
+# Perform K-means with 4 clusters as an example
+k4_mca <- kmeans(data_mca, centers = 4, nstart = 25)
+cat("Proportion of variance explained (MCA):", k4_mca$betweenss / k4_mca$totss, "\n")
+
+
+# Use the factorial coordinates from PCA
+data_pca <- res.pca$ind$coord  # Factorial coordinates from PCA
+# Create a vector to store TWSS
+aux <- c()
+for (i in 2:6) {  # Adjust the range if needed
+  k <- kmeans(data_pca, centers = i, nstart = 25)
+  aux[i - 1] <- k$tot.withinss  # TWSS for each number of clusters
+}
+# Plot the Elbow Method graph
+plot(2:6, aux, xlab = "Number of Clusters", ylab = "TWSS", type = "l", main = "TWSS vs. Number of Clusters for PCA")
+# Perform K-means with 4 clusters as an example
+k4_pca <- kmeans(data_pca, centers = 4, nstart = 25)
+cat("Proportion of variance explained (PCA):", k4_pca$betweenss / k4_pca$totss, "\n")
+
+
+
+####### Pseudo F Index #########
+
+# Create a vector to store the Pseudo-F Index MCA
+aux <- c()
+for (i in 2:20) {  # Adjust the range if needed
+  k <- kmeans(data_mca, centers = i, nstart = 25)
+  aux[i - 1] <- ((k$betweenss) * (nrow(data_mca) - i)) / ((k$tot.withinss) * (i - 1))  # Pseudo-F calculation
+}
+# Plot the Pseudo F Index graph
+plot(2:20, aux, xlab = "Number of Clusters", ylab = "Pseudo-F", type = "l", main = "Pseudo F Index for MCA")
+# Find the optimal number of clusters
+optimal_clusters_mca <- which.max(aux)
+cat("Optimal number of clusters for MCA:", optimal_clusters_mca, "\n")
+
+
+# Create a vector to store the Pseudo-F Index
+aux <- c()
+for (i in 2:20) {  # Adjust the range if needed
+  k <- kmeans(data_pca, centers = i, nstart = 25)
+  aux[i - 1] <- ((k$betweenss) * (nrow(data_pca) - i)) / ((k$tot.withinss) * (i - 1))  # Pseudo-F calculation
+}
+# Plot the Pseudo F Index graph
+plot(2:20, aux, xlab = "Number of Clusters", ylab = "Pseudo-F", type = "l", main = "Pseudo F Index for PCA")
+# Find the optimal number of clusters
+optimal_clusters_pca <- which.max(aux)
+cat("Optimal number of clusters for PCA:", optimal_clusters_pca, "\n")
+
+
 ```
 
